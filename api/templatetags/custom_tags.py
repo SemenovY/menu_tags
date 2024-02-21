@@ -1,14 +1,28 @@
 from api.models import MenuItem
 from django import template
 from django.core.exceptions import ObjectDoesNotExist
+from typing import Optional, List, Union
 
 register = template.Library()
 
-
 @register.inclusion_tag('menu.html')
-def draw_menu(menu_name: str = None, menu_item: str = None):
+def draw_menu(menu_name: str = None, menu_item: str = None) -> dict:
+    """
+    Inclusion tag для отрисовки меню на основе заданных параметров.
 
-    def get_menu(menu_item: str = None, submenu: list = None):
+    :param menu_name: Название меню
+    :param menu_item: Название текущего активного пункта меню
+    :return: Словарь с данными для отрисовки меню
+    """
+
+    def get_menu(menu_item: Optional[str] = None, submenu: Optional[List[Union[MenuItem, List]]] = None) -> List[Union[MenuItem, List]]:
+        """
+        Рекурсивная функция для построения структуры меню.
+
+        :param menu_item: Название текущего активного пункта меню
+        :param submenu: Подменю текущего пункта меню
+        :return: Список с пунктами меню и подменю
+        """
         menu = list(items.filter(parent=None)) if menu_item is None \
             else list(items.filter(parent__name=menu_item))
         try:
@@ -18,7 +32,7 @@ def draw_menu(menu_name: str = None, menu_item: str = None):
         try:
             return get_menu(items.get(name=menu_item).parent.name, menu)
         except AttributeError:
-            return get_menu(submenu=menu)
+            return get_menu(submenu=submenu)
         except ObjectDoesNotExist:
             return menu
 
