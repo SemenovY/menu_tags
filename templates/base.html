@@ -5,7 +5,7 @@
         {% for menu in menus%}
             <li><a href='{{ menu }}'>{{ menu }}</a></li>
         {% endfor %}
-    </ul>    
+    </ul>
 {% elif menu_name %}
     <h3><a href={% url 'main_menu' %}>Главное меню</a></h3>
     {% draw_menu menu_name menu_item %}
